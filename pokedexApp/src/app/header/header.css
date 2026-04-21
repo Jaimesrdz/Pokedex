@@ -1,0 +1,13 @@
+header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #e9ec23;
+}
+
+.sort-btn {
+    position: absolute;
+    right: 0px;
+    padding: 10px;
+}
