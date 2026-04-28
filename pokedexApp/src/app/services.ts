@@ -10,7 +10,7 @@ export class Services {
 
   // Receives JSON data from the API
   getPokemonList() {
-      return this.http.get('https://pokeapi.co/api/v2/pokemon?limit=12');
+      return this.http.get(`https://pokeapi.co/api/v2/pokemon?limit=30`);
   }
 
   getAdditionalInfo(name : string) {

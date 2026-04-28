@@ -1,2 +1,2 @@
-<app-header></app-header>
-<app-pokemon-list></app-pokemon-list>
+<app-header (sort)="onSort()" (search)="onSearch($event)"></app-header>
+<app-pokemon-list [sortTrigger]="sortActive" [searchValue]="searchValue"></app-pokemon-list>

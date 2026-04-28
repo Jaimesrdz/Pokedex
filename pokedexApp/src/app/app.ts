@@ -12,4 +12,14 @@ import { PokemonList } from './pokemon-list/pokemon-list';
 })
 export class App {
   protected readonly title = signal('pokedexApp');
+
+  sortActive = 0;
+  onSort () {
+    this.sortActive += 1;
+  }
+
+  searchValue = '';
+  onSearch(value: string) {
+    this.searchValue = value;
+  }
 }

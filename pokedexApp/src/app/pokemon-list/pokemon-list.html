@@ -1,7 +1,7 @@
 <div class="card-container">
-    <div class="card" *ngFor="let pokemon of pokemonList">
+    <div class="card" *ngFor="let pokemon of displayedList">
         <div class="card-header">
-            <img [src]="pokemon.sprites.other.showdown.front_default" alt="sprite" />   
+            <img [src]="pokemon.sprites.front_default" alt="sprite" />   
         </div>
         <div class="card-info">
             <p>{{ pokemon.name }}</p>
