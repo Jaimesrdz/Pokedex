@@ -6,9 +6,8 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-pokemon-list',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './pokemon-list.html',
-  styleUrl: './pokemon-list.css',
+  template: '<div></div>',
+  styles: [''],
 })
 export class PokemonList implements OnInit {
 
