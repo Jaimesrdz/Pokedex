@@ -8,16 +8,15 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './header.css',
 })
 export class Header {
-  @Output() sort = new EventEmitter<void>();
+  @Output() filterChange = new EventEmitter<string>();
   @Output() search = new EventEmitter<string>();
 
   onSearch(value: string) {
     this.search.emit(value);
   }
   
-  sortClick() {
-    this.sort.emit();
+  onFilterChange(value: string) {
+    this.filterChange.emit(value);
   }
-
-
 }
+

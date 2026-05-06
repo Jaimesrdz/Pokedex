@@ -1,22 +1,29 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Header } from './header';
+import { Services } from '../services';
+import { of } from 'rxjs';
+
 
 describe('Header', () => {
   let component: Header;
-  let fixture: ComponentFixture<Header>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [Header],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(Header);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+  beforeEach(() => {
+    component = new Header();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should emit search value', () => {
+  jest.spyOn(component.search, 'emit');
+
+  component.onSearch('pikachu');
+
+  expect(component.search.emit).toHaveBeenCalledWith('pikachu');
+  });
+
+  it('should emit filter value', () => {
+    jest.spyOn(component.filterChange, 'emit');
+
+    component.onFilterChange('type');
+
+    expect(component.filterChange.emit).toHaveBeenCalledWith('type');
   });
 });
