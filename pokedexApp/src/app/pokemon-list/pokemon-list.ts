@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, ChangeDetectorRef, Input, SimpleChanges, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, Observable } from 'rxjs';
 import { Services } from '../services';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './pokemon-list.html',
   styleUrl: './pokemon-list.css',
 })
-export class PokemonList implements OnInit {
+export class PokemonList implements OnInit, OnChanges {
 
   @Input() searchValue: string = '';
   @Input() filterTrigger: string = '';
@@ -19,44 +21,43 @@ export class PokemonList implements OnInit {
   sortedPokemonList: any[] = [];
   displayedList: any[] = [];
 
+  private offset = 0;
+  private destroyRef = inject(DestroyRef);
+
   constructor(
     private dataService: Services,
     private cd: ChangeDetectorRef
   ) {}
 
-
-
   ngOnInit(): void {
-    this.dataService.getPokemonList(0).subscribe((data: any) => {
-      data.results.forEach((pokemon: any) => {
-        this.dataService.getAdditionalInfo(pokemon.name).subscribe((info: any) => {
-          this.displayedList = [...this.displayedList, info];
-          this.pokemonList = this.displayedList;
-          console.log(info);
-          console.log(this.displayedList);
-
-          // FORCE DETECT PLEASE WORK (it worked)
-          this.cd.detectChanges();
-        });
+    this.dataService.getPokemonList(this.offset)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: any) => {
+        const requests: Observable<any>[] = data.results.map((pokemon: any) =>
+          this.dataService.getAdditionalInfo(pokemon.name)
+        );
+        forkJoin(requests)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((pokemonDetails: any[]) => {
+            this.offset += 24;
+            this.pokemonList = pokemonDetails;
+            this.displayedList = pokemonDetails;
+            this.cd.detectChanges();
+          });
       });
-    });
   }
 
-    ngOnChanges(changes: SimpleChanges) {
-      if (changes['filterTrigger']) {
-        this.applyFilter();
-        console.log("filtering..."); {
-        }
-      }
-      if (changes['searchValue']) {
-        this.onSearch();
-      }
-      }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['filterTrigger']) {
+      this.applyFilter();
+    }
+    if (changes['searchValue']) {
+      this.onSearch();
+    }
+  }
 
   onSearch() {
-    console.log("searching...");
-
-    let base = this.sortedPokemonList.length
+    const base = this.sortedPokemonList.length
       ? this.sortedPokemonList
       : this.pokemonList;
 
@@ -72,42 +73,53 @@ export class PokemonList implements OnInit {
   applyFilter() {
     if (this.filterTrigger === 'type') {
       this.sortedPokemonList = [...this.pokemonList].sort((a, b) =>
-      a.types[0].type.name.localeCompare(b.types[0].type.name)
-    );
+        a.types[0].type.name.localeCompare(b.types[0].type.name)
+      );
     } else if (this.filterTrigger === 'id') {
-    this.sortedPokemonList = [...this.pokemonList].sort((a, b) => a.id - b.id);
+      this.sortedPokemonList = [...this.pokemonList].sort((a, b) => a.id - b.id);
+    } else if (this.filterTrigger === 'hp') {
+      this.sortedPokemonList = [...this.pokemonList].sort((a, b) => b.stats[0].base_stat - a.stats[0].base_stat);
     }
-      else if (this.filterTrigger === 'hp') {
-        this.sortedPokemonList = [...this.pokemonList].sort((a, b) => b.stats[0].base_stat - a.stats[0].base_stat);
-      }
     this.displayedList = this.sortedPokemonList;
-    console.log(this.displayedList);
   }
 
   loadNextPage() {
-  console.log("Loading next page...");
-  
-
-  const offset = this.displayedList.length;
-
-  this.displayedList = [];
-
-  this.dataService.getPokemonList(offset).subscribe((data: any) => {
-    const newList: any[] = [];
-
-    data.results.forEach((pokemon: any) => {
-      this.dataService.getAdditionalInfo(pokemon.name).subscribe((info: any) => {
-        newList.push(info);
-        if (newList.length === data.results.length) {
-          this.displayedList = newList;
-          this.pokemonList = newList;
-          this.sortedPokemonList = [];
-          this.cd.detectChanges();
-        }
+    this.dataService.getPokemonList(this.offset)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: any) => {
+        const requests: Observable<any>[] = data.results.map((pokemon: any) =>
+          this.dataService.getAdditionalInfo(pokemon.name)
+        );
+        forkJoin(requests)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((pokemonDetails: any[]) => {
+            this.offset += 24;
+            this.pokemonList = pokemonDetails;
+            this.displayedList = pokemonDetails;
+            this.sortedPokemonList = [];
+            this.cd.detectChanges();
+          });
       });
-    });
-  });
-  console.log(this.displayedList);
-}
+  }
 
+  loadPreviousPage() {
+    if (this.offset <= 24) return;
+    const prevOffset = this.offset - 48;
+    this.dataService.getPokemonList(prevOffset)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: any) => {
+        const requests: Observable<any>[] = data.results.map((pokemon: any) =>
+          this.dataService.getAdditionalInfo(pokemon.name)
+        );
+        forkJoin(requests)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((pokemonDetails: any[]) => {
+            this.offset -= 24;
+            this.pokemonList = pokemonDetails;
+            this.displayedList = pokemonDetails;
+            this.sortedPokemonList = [];
+            this.cd.detectChanges();
+          });
+      });
+  }
 }

@@ -48,3 +48,15 @@
 .next-button img{
     transform: rotate(90deg);
 }
+
+.back-button { 
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    left: 20px;
+    position: absolute;
+}
+
+.back-button img{
+    transform: rotate(270deg);
+}

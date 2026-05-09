@@ -1,11 +1,13 @@
-<!-- -->
+<button class="back-button" (click)="loadPreviousPage()">
+    <img src="https://img.icons8.com/?size=50&id=59987&format=png" alt="Previous" />
+</button>
 <button class="next-button" (click)="loadNextPage()">
     <img src="https://img.icons8.com/?size=50&id=59987&format=png" alt="Next" />
 </button>
 <div class="card-container">
     <div class="card" *ngFor="let pokemon of displayedList">
         <div class="card-header">
-            <img [src]="pokemon.sprites.front_default" alt="sprite" />   
+            <img [src]="pokemon.sprites.front_default || ''" alt="sprite" />
         </div>
         <div class="card-info">
             <p>{{ pokemon.name }}</p>
@@ -15,6 +17,9 @@
         </div>
     </div>
 </div>
+<button class="back-button" (click)="loadPreviousPage()">
+    <img src="https://img.icons8.com/?size=50&id=59987&format=png" alt="Previous" />
+</button>
 <button class="next-button" (click)="loadNextPage()">
     <img src="https://img.icons8.com/?size=50&id=59987&format=png" alt="Next" />
 </button>
