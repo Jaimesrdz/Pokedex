@@ -36,3 +36,15 @@
     font-size: 20px;
     text-transform: capitalize;
 }
+
+.next-button { 
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    right: 20px;
+    position: absolute;
+}
+
+.next-button img{
+    transform: rotate(90deg);
+}

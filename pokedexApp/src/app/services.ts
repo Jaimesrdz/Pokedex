@@ -9,8 +9,8 @@ export class Services {
   constructor(private http: HttpClient) {}
 
   // Receives JSON data from the API
-  getPokemonList() {
-      return this.http.get(`https://pokeapi.co/api/v2/pokemon?limit=30`);
+  getPokemonList(offset: number) {
+      return this.http.get(`https://pokeapi.co/api/v2/pokemon?limit=24&offset=${offset}`);
   }
 
   getAdditionalInfo(name : string) {

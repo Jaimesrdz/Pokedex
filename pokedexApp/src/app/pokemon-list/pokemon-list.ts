@@ -27,7 +27,7 @@ export class PokemonList implements OnInit {
 
 
   ngOnInit(): void {
-    this.dataService.getPokemonList().subscribe((data: any) => {
+    this.dataService.getPokemonList(0).subscribe((data: any) => {
       data.results.forEach((pokemon: any) => {
         this.dataService.getAdditionalInfo(pokemon.name).subscribe((info: any) => {
           this.displayedList = [...this.displayedList, info];
@@ -83,5 +83,31 @@ export class PokemonList implements OnInit {
     this.displayedList = this.sortedPokemonList;
     console.log(this.displayedList);
   }
+
+  loadNextPage() {
+  console.log("Loading next page...");
+  
+
+  const offset = this.displayedList.length;
+
+  this.displayedList = [];
+
+  this.dataService.getPokemonList(offset).subscribe((data: any) => {
+    const newList: any[] = [];
+
+    data.results.forEach((pokemon: any) => {
+      this.dataService.getAdditionalInfo(pokemon.name).subscribe((info: any) => {
+        newList.push(info);
+        if (newList.length === data.results.length) {
+          this.displayedList = newList;
+          this.pokemonList = newList;
+          this.sortedPokemonList = [];
+          this.cd.detectChanges();
+        }
+      });
+    });
+  });
+  console.log(this.displayedList);
+}
 
 }

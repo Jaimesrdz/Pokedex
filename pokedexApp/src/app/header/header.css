@@ -1,13 +1,38 @@
 header {
     position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 20px;
     background-color: #e9ec23;
 }
 
-.sort-btn {
+header h1 {
+    margin-left: 20px;
+}
+
+.search-bar {
+    display: flex;
     position: absolute;
-    right: 0px;
+    right: 200px;
+    width: 30%;
+}
+.search-bar input {
+    display: flex;
     padding: 10px;
+    height: 20px;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.filter-select {
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    right: 0px;
+    padding: 10px;   
+    margin-right: 20px;
+}
+
+.filter-select:focus {
+    outline: 1px dotted black;
 }
